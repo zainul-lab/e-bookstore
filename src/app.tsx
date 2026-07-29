@@ -131,8 +131,8 @@ function HeroCard() {
 function BookCover({ book, large = false }: { book: Book; large?: boolean }) {
   return (
     <div
-      className={`relative overflow-hidden rounded-[1.5rem] border border-black/10 text-white ${
-        large ? 'h-72 w-full max-w-xs' : 'h-36 w-24'
+      className={`relative overflow-hidden rounded-2xl border border-black/10 text-white ${
+        large ? 'h-72 w-full' : 'h-48 w-full'
       }`}
       style={{ backgroundColor: book.coverColor }}
     >
@@ -141,20 +141,20 @@ function BookCover({ book, large = false }: { book: Book; large?: boolean }) {
         style={{ backgroundColor: book.coverAccent }}
       />
       <div
-        className="absolute -right-6 -top-6 h-24 w-24 rounded-full opacity-30"
+        className="absolute -right-8 -top-8 h-32 w-32 rounded-full opacity-25"
         style={{ backgroundColor: book.coverAccent }}
       />
       <div
-        className="absolute -bottom-8 left-4 h-24 w-24 rounded-full opacity-20"
+        className="absolute -bottom-10 left-4 h-28 w-28 rounded-full opacity-15"
         style={{ backgroundColor: book.coverAccent }}
       />
       <div className="relative flex h-full flex-col justify-between p-4">
         <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-white/80">{book.category}</p>
         <div>
-          <p className={`font-serif font-semibold leading-tight ${large ? 'text-3xl' : 'text-xl'}`}>{book.title}</p>
-          <p className={`mt-2 text-white/80 ${large ? 'text-sm' : 'text-[11px]'}`}>{book.author}</p>
+          <p className={`font-serif font-semibold leading-tight ${large ? 'text-3xl' : 'text-lg'}`}>{book.title}</p>
+          <p className={`mt-1 text-white/80 ${large ? 'text-sm' : 'text-xs'}`}>{book.author}</p>
         </div>
-        <p className="text-right text-xs font-semibold uppercase tracking-[0.3em] text-white/80">{book.cover}</p>
+        <p className="text-right text-[10px] font-semibold uppercase tracking-[0.3em] text-white/70">{book.cover}</p>
       </div>
     </div>
   );
@@ -164,42 +164,56 @@ function BookCard({ book, showDescription = true }: { book: Book; showDescriptio
   const dispatch = useAppDispatch();
 
   return (
-    <article className="flex h-full flex-col rounded-[1.75rem] border border-brand/10 bg-white/95 p-5 backdrop-blur-sm transition hover:-translate-y-1 hover:border-accent/40">
-      <div className="flex items-start gap-4">
-        <BookCover book={book} />
-        <div className="flex-1">
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">{book.category}</p>
-          <h3 className="mt-2 font-serif text-2xl font-semibold leading-tight text-ink">{book.title}</h3>
-          <p className="mt-2 text-sm text-brand/70">
+    <article className="flex h-full flex-col rounded-[1.75rem] border border-brand/10 bg-white/95 overflow-hidden transition hover:-translate-y-1 hover:border-accent/40 hover:shadow-md">
+      {/* Cover — full width, fixed height */}
+      <BookCover book={book} />
+
+      {/* Content area stretches to fill remaining height */}
+      <div className="flex flex-1 flex-col gap-3 p-4">
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-accent">{book.category}</p>
+          <h3 className="mt-1 font-serif text-base font-semibold leading-snug text-ink line-clamp-2">{book.title}</h3>
+          <p className="mt-1 text-xs text-brand/70 truncate">
             {book.author} · {book.brand}
           </p>
         </div>
-      </div>
-      {showDescription ? <p className="mt-4 flex-1 text-sm leading-7 text-brand/80">{book.shortDescription}</p> : null}
-      <div className="mt-5 flex flex-wrap items-center gap-2">
-        {book.tags.slice(0, 3).map((tag) => (
-          <span key={tag} className="rounded-full border border-accent/20 bg-accent/10 px-3 py-1 text-xs font-medium text-brand">
-            {tag}
-          </span>
-        ))}
-      </div>
-      <div className="mt-5 flex items-end justify-between gap-4">
-        <div>
-          <p className="text-sm text-brand/70">From</p>
-          <p className="text-2xl font-semibold text-ink">{formatCurrency(book.price)}</p>
-          <p className="text-sm text-pine">Delivery in {book.deliveryDays} day{book.deliveryDays > 1 ? 's' : ''}</p>
+
+        {showDescription ? (
+          <p className="flex-1 text-xs leading-relaxed text-brand/80 line-clamp-3">{book.shortDescription}</p>
+        ) : (
+          <div className="flex-1" />
+        )}
+
+        <div className="flex flex-wrap gap-1">
+          {book.tags.slice(0, 2).map((tag) => (
+            <span key={tag} className="rounded-full border border-accent/20 bg-accent/10 px-2 py-0.5 text-[10px] font-medium text-brand">
+              {tag}
+            </span>
+          ))}
         </div>
-        <div className="flex flex-col gap-2 sm:items-end">
-          <Link to={`/catalogue/${book.id}`} className="rounded-full border border-brand/15 px-4 py-2 text-sm font-semibold text-brand">
-            View details
-          </Link>
-          <button
-            type="button"
-            onClick={() => dispatch(addToCart(book.id))}
-            className="rounded-full bg-brand px-4 py-2 text-sm font-semibold text-white"
-          >
-            Add to basket
-          </button>
+
+        <div className="flex items-center justify-between gap-2 pt-1 border-t border-brand/10">
+          <div>
+            <p className="text-lg font-semibold text-ink leading-none">{formatCurrency(book.price)}</p>
+            <p className="mt-0.5 text-[10px] text-pine">
+              Delivery in {book.deliveryDays} day{book.deliveryDays > 1 ? 's' : ''}
+            </p>
+          </div>
+          <div className="flex flex-col gap-1.5 items-end shrink-0">
+            <Link
+              to={`/catalogue/${book.id}`}
+              className="rounded-full border border-brand/20 px-3 py-1.5 text-[11px] font-semibold text-brand whitespace-nowrap"
+            >
+              View details
+            </Link>
+            <button
+              type="button"
+              onClick={() => dispatch(addToCart(book.id))}
+              className="rounded-full bg-brand px-3 py-1.5 text-[11px] font-semibold text-white whitespace-nowrap"
+            >
+              Add to basket
+            </button>
+          </div>
         </div>
       </div>
     </article>
@@ -318,7 +332,7 @@ function ProductDetailSummary({ book }: { book: Book }) {
           title="Customers also explored"
           description="Books with shared category, brand, or theme are surfaced to support cross-sell and discovery."
         />
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4" style={{ gridAutoRows: '1fr' }}>
           {relatedBooks.map((relatedBook) => (
             <BookCard key={relatedBook.id} book={relatedBook} showDescription={false} />
           ))}
@@ -462,7 +476,7 @@ export function HomePage() {
           title="Featured picks on the landing page"
           description="Customers can browse highlighted books immediately, then move into the catalogue or detail pages."
         />
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4" style={{ gridAutoRows: '1fr' }}>
           {featuredBooks.map((book) => (
             <BookCard key={book.id} book={book} />
           ))}
@@ -474,7 +488,7 @@ export function HomePage() {
           title={`Suggested for ${currentUser.name}`}
           description="Recommendations are derived from the selected demo customer's prior purchases and preferred categories or brands."
         />
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4" style={{ gridAutoRows: '1fr' }}>
           {recommendedBooks.map((book) => (
             <BookCard key={book.id} book={book} />
           ))}
@@ -563,11 +577,19 @@ export function CataloguePage() {
           </button>
         </div>
         <div className="space-y-6">
-          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {filteredBooks.map((book) => (
-              <BookCard key={book.id} book={book} />
-            ))}
-          </div>
+          {/* Book grid — items align to uniform card height via CSS grid */}
+          {filteredBooks.length === 0 ? (
+            <div className="rounded-[2rem] border border-dashed border-brand/20 bg-white/95 px-6 py-12 text-center">
+              <p className="text-sm font-medium uppercase tracking-[0.3em] text-accent">No results</p>
+              <h2 className="mt-4 text-2xl font-semibold text-ink">No books match the current filters.</h2>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3" style={{ gridAutoRows: '1fr' }}>
+              {filteredBooks.map((book) => (
+                <BookCard key={book.id} book={book} />
+              ))}
+            </div>
+          )}
           <section className="rounded-[2rem] border border-brand/10 bg-white/95 p-6">
             <SectionHeader
               eyebrow="Buy again"
@@ -586,7 +608,7 @@ export function CataloguePage() {
               title="Based on order history"
               description="These additional books are recommended from the selected customer's prior purchases."
             />
-            <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+            <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3" style={{ gridAutoRows: '1fr' }}>
               {recommendedBooks.map((book) => (
                 <BookCard key={book.id} book={book} showDescription={false} />
               ))}
@@ -648,20 +670,44 @@ export function CartPage() {
             </section>
           ) : (
             cartItems.map((item) => (
-              <article key={item.bookId} className="rounded-[2rem] border border-brand/10 bg-white/95 p-5">
-                <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
-                  <div className="space-y-2">
+              <article key={item.bookId} className="rounded-[2rem] border border-brand/10 bg-white/95 overflow-hidden">
+                {/* Item row: cover + info + price/controls */}
+                <div className="flex flex-col gap-0 sm:flex-row sm:items-stretch">
+                  {/* Book cover — fixed width column */}
+                  <div className="w-full sm:w-36 shrink-0">
+                    <div
+                      className="relative h-40 w-full overflow-hidden sm:h-full"
+                      style={{ backgroundColor: item.book.coverColor }}
+                    >
+                      <div
+                        className="absolute -right-6 -top-6 h-24 w-24 rounded-full opacity-20"
+                        style={{ backgroundColor: item.book.coverAccent }}
+                      />
+                      <div className="relative flex h-full flex-col justify-between p-4 text-white">
+                        <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-white/70">{item.book.category}</p>
+                        <div>
+                          <p className="font-serif text-base font-semibold leading-tight">{item.book.title}</p>
+                          <p className="mt-1 text-xs text-white/70">{item.book.author}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Book info */}
+                  <div className="flex flex-1 flex-col justify-center gap-2 p-5">
                     <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">{item.book.category}</p>
-                    <h3 className="text-xl font-semibold text-ink">{item.book.title}</h3>
+                    <h3 className="font-serif text-xl font-semibold text-ink">{item.book.title}</h3>
                     <p className="text-sm text-brand/70">
                       {item.book.author} · {item.book.brand}
                     </p>
-                    <p className="text-sm text-brand/80">{item.book.shortDescription}</p>
+                    <p className="text-sm leading-6 text-brand/80">{item.book.shortDescription}</p>
                     <p className="text-sm text-pine">Estimated delivery in {item.book.deliveryDays} day{item.book.deliveryDays > 1 ? 's' : ''}</p>
                   </div>
-                  <div className="space-y-4 rounded-[1.75rem] border border-brand/10 bg-parchment p-4 sm:min-w-56">
+
+                  {/* Price + controls */}
+                  <div className="flex shrink-0 flex-col justify-between gap-4 border-t border-brand/10 bg-parchment p-5 sm:w-48 sm:border-l sm:border-t-0">
                     <div>
-                      <p className="text-sm text-brand/70">Line total</p>
+                      <p className="text-xs text-brand/70">Line total</p>
                       <p className="text-2xl font-semibold text-ink">{formatCurrency(item.lineTotal)}</p>
                     </div>
                     <label className="block text-sm text-brand/80">
@@ -696,7 +742,7 @@ export function CartPage() {
               title="Items based on order history"
               description="Additional recommendations help grow basket size from the selected customer profile."
             />
-            <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+            <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3" style={{ gridAutoRows: '1fr' }}>
               {recommendedBooks.map((book) => (
                 <BookCard key={book.id} book={book} showDescription={false} />
               ))}
