@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import { Link, NavLink, Outlet, useNavigate, useParams } from 'react-router-dom';
 import { fetchBooks, fetchUsers } from './services/bookstoreService';
-import { getPersistedCartItems } from './store/persistence';
 import { useAppDispatch, useAppSelector } from './store/hooks';
 import {
   selectBook,
@@ -15,19 +14,18 @@ import {
   selectPaymentOptions,
   selectRecommendedBooks,
   selectRelatedBooks,
-  selectUsers,
 } from './store';
-import { addToCart, buyAgain, clearCart, removeFromCart, replaceCart, updateQuantity } from './store/slices/cartSlice';
+import { addToCart, buyAgain, clearCart, removeFromCart, updateQuantity } from './store/slices/cartSlice';
 import { resetFilters, setBrandFilter, setCategoryFilter, setSearchFilter } from './store/slices/catalogueSlice';
 import {
   resetCheckout,
-  resetCheckoutForUser,
   setPaymentOption,
   setRedeemedPoints,
   setSelectedAddress,
   submitOrder,
 } from './store/slices/checkoutSlice';
-import { selectUser } from './store/slices/sessionSlice';
+import { logout } from './store/slices/authSlice';
+import { deductPoints } from './store/slices/usersSlice';
 import type { Book, Order } from './types/store';
 
 const navLinkClassName = ({ isActive }: { isActive: boolean }) =>
@@ -343,8 +341,15 @@ function ProductDetailSummary({ book }: { book: Book }) {
 }
 
 export function AppLayout() {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const currentUser = useAppSelector(selectCurrentUser);
   const cartSummary = useAppSelector(selectCartSummary);
+
+  function handleLogout() {
+    dispatch(logout());
+    navigate('/login', { replace: true });
+  }
 
   return (
     <div className="min-h-screen text-ink">
@@ -362,6 +367,13 @@ export function AppLayout() {
               <span className="rounded-full border border-brand/10 bg-white/80 px-3 py-2">Signed in as {currentUser.name}</span>
               <span className="rounded-full border border-accent/20 bg-accent/10 px-3 py-2 text-brand">{currentUser.giftPoints} gift points</span>
               <span className="rounded-full border border-pine/20 bg-pine/10 px-3 py-2 text-pine">{cartSummary.itemCount} item(s) in basket</span>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="rounded-full border border-brand/20 bg-white/70 px-3 py-2 text-sm font-medium text-brand/80 transition hover:border-brand/40 hover:bg-parchment"
+              >
+                Sign out
+              </button>
             </div>
           </div>
           <nav className="flex flex-wrap gap-2">
@@ -397,8 +409,6 @@ export function AppLayout() {
 }
 
 export function HomePage() {
-  const dispatch = useAppDispatch();
-  const users = selectUsers();
   const currentUser = useAppSelector(selectCurrentUser);
   const featuredBooks = selectFeaturedBooks();
   const recommendedBooks = useAppSelector(selectRecommendedBooks);
@@ -406,70 +416,6 @@ export function HomePage() {
   return (
     <div className="space-y-8">
       <HeroCard />
-      <section className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-        <div className="rounded-[2rem] border border-brand/10 bg-white/95 p-6 backdrop-blur-sm">
-          <SectionHeader
-            eyebrow="Mock sign in"
-            title="Choose a demo customer"
-            description="Switch between stored addresses, order history, and gift point balances for the mocked storefront journey."
-          />
-          <div className="mt-6 grid gap-4">
-            {users.map((user) => (
-              <button
-                key={user.id}
-                type="button"
-                onClick={() => {
-                  dispatch(selectUser(user.id));
-                  dispatch(replaceCart(getPersistedCartItems(user.id)));
-                  dispatch(resetCheckoutForUser(user.id));
-                }}
-                className={`rounded-[1.75rem] border p-5 text-left transition ${
-                  currentUser.id === user.id
-                    ? 'border-brand bg-parchment ring-4 ring-brand/5'
-                    : 'border-brand/10 bg-parchment/60 hover:border-accent/30 hover:bg-parchment'
-                }`}
-              >
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <div>
-                    <h3 className="text-lg font-semibold text-ink">{user.name}</h3>
-                    <p className="text-sm text-brand/70">{user.email}</p>
-                  </div>
-                  <div className="text-sm text-brand/80">
-                    <p>{user.addresses.length} saved address(es)</p>
-                    <p>{user.orderHistory.length} previous order(s)</p>
-                  </div>
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-        {/* <section className="grid gap-6 lg:grid-cols-3">
-          <JourneyCard
-            title="Landing page"
-            items={[
-              'Show available books and featured picks',
-              'Support selection of books and start shopping journey',
-              'Lead customers toward cart, checkout, and payment completion',
-            ]}
-          />
-          <JourneyCard
-            title="Catalogue journey"
-            items={[
-              'Filter by category and browse brands or publishers',
-              'Open product details and view related books',
-              'Browse order history and trigger buy again actions',
-            ]}
-          />
-          <JourneyCard
-            title="Purchase flow"
-            items={[
-              'Add books to cart and review recommendations',
-              'Choose address, payment option, and redeem gift points',
-              'Complete payment simulation and confirm the order',
-            ]}
-          />
-        </section> */}
-      </section>
       <section className="space-y-5">
         <SectionHeader
           eyebrow="Available books"
@@ -911,6 +857,8 @@ export function PaymentPage() {
   const paymentOptions = selectPaymentOptions();
   const selectedPaymentOption = useAppSelector((state) => state.checkout.paymentOptionId);
   const cartSummary = useAppSelector(selectCartSummary);
+  const currentUser = useAppSelector(selectCurrentUser);
+  const redeemedPoints = useAppSelector((state) => state.checkout.redeemedPoints);
 
   return (
     <div className="space-y-8">
@@ -944,6 +892,9 @@ export function PaymentPage() {
           <button
             type="button"
             onClick={() => {
+              if (redeemedPoints > 0) {
+                dispatch(deductPoints({ userId: currentUser.id, points: redeemedPoints }));
+              }
               dispatch(submitOrder());
               dispatch(clearCart());
               navigate('/confirmation');

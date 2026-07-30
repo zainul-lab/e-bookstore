@@ -10,16 +10,20 @@ import {
   getRelatedBooks,
 } from '../services/bookstoreService';
 import { persistStoreState } from './persistence';
+import { authReducer } from './slices/authSlice';
 import { cartReducer } from './slices/cartSlice';
 import { catalogueReducer } from './slices/catalogueSlice';
 import { checkoutReducer } from './slices/checkoutSlice';
 import { sessionReducer } from './slices/sessionSlice';
+import { usersReducer } from './slices/usersSlice';
 
 const rootReducer = combineReducers({
+  auth: authReducer,
   session: sessionReducer,
   catalogue: catalogueReducer,
   cart: cartReducer,
   checkout: checkoutReducer,
+  users: usersReducer,
 });
 
 export const store = configureStore({
@@ -41,7 +45,7 @@ export const selectUsers = () => demoUsers;
 export const selectPaymentOptions = () => paymentOptions;
 
 export const selectCurrentUser = (state: RootState) =>
-  demoUsers.find((user) => user.id === state.session.selectedUserId) ?? demoUsers[0];
+  state.users[state.session.selectedUserId] ?? (Object.values(state.users)[0] as (typeof state.users)[string]);
 
 export const selectFilteredBooks = (state: RootState) => {
   const currentFilters = state.catalogue;

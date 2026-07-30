@@ -245,11 +245,15 @@ export const books: Book[] = [
   },
 ];
 
+const DEMO_PASSWORD_MAYA = import.meta.env.VITE_DEMO_PASSWORD_MAYA ?? 'maya123';
+const DEMO_PASSWORD_DANIEL = import.meta.env.VITE_DEMO_PASSWORD_DANIEL ?? 'daniel123';
+
 export const demoUsers: User[] = [
   {
     id: 'maya',
     name: 'Maya Patel',
     email: 'maya@example.com',
+    password: DEMO_PASSWORD_MAYA,
     giftPoints: 320,
     addresses: [
       {
@@ -295,6 +299,7 @@ export const demoUsers: User[] = [
     id: 'daniel',
     name: 'Daniel Brooks',
     email: 'daniel@example.com',
+    password: DEMO_PASSWORD_DANIEL,
     giftPoints: 180,
     addresses: [
       {
