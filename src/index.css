@@ -2,22 +2,43 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   CSS CUSTOM PROPERTIES — colour tokens
+   Tailwind is configured with var(--color-*) tokens. These MUST be defined
+   here so every utility (text-brand, bg-parchment, text-ink, etc.) resolves
+   to a real colour at both compile time and runtime.
+   ───────────────────────────────────────────────────────────────────────────── */
+
 :root {
-  color: #241813;
-  background-color: #f6efe6;
+  /* Light-mode values */
+  --color-brand:     #7c4f2f;   /* warm brown — primary text / borders */
+  --color-accent:    #b87333;   /* copper amber — eyebrows / badges     */
+  --color-ink:       #241813;   /* near-black — headings / body text    */
+  --color-parchment: #f5ede0;   /* warm off-white — panel surfaces      */
+  --color-pine:      #2d6a4f;   /* forest green — delivery / positive   */
+
   font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   line-height: 1.5;
   font-weight: 400;
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   BODY & BACKGROUND
+   ───────────────────────────────────────────────────────────────────────────── */
+
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  color: var(--color-ink);
   background:
     radial-gradient(circle at top, rgba(194, 136, 58, 0.12), transparent 30%),
     linear-gradient(180deg, #fbf6ef 0%, #f3eadf 100%);
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   MISC
+   ───────────────────────────────────────────────────────────────────────────── */
 
 * {
   box-sizing: border-box;

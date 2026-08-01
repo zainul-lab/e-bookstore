@@ -27,19 +27,6 @@ const cartSlice = createSlice({
         quantity: 1,
       });
     },
-    buyAgain(state, action: PayloadAction<string>) {
-      const existingItem = state.items.find((item) => item.bookId === action.payload);
-
-      if (existingItem) {
-        existingItem.quantity += 1;
-        return;
-      }
-
-      state.items.push({
-        bookId: action.payload,
-        quantity: 1,
-      });
-    },
     updateQuantity(state, action: PayloadAction<{ bookId: string; quantity: number }>) {
       const item = state.items.find((cartItem) => cartItem.bookId === action.payload.bookId);
 
@@ -62,5 +49,9 @@ const cartSlice = createSlice({
   },
 });
 
-export const { addToCart, buyAgain, clearCart, removeFromCart, replaceCart, updateQuantity } = cartSlice.actions;
+export const { addToCart, clearCart, removeFromCart, replaceCart, updateQuantity } = cartSlice.actions;
+
+// buyAgain has identical behaviour to addToCart — re-exported as an alias so
+// call sites don't need to change.
+export const buyAgain = cartSlice.actions.addToCart;
 export const cartReducer = cartSlice.reducer;

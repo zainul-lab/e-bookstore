@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { RouterProvider } from 'react-router-dom';
@@ -9,7 +9,9 @@ import './index.css';
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <Provider store={store}>
-      <RouterProvider router={router} />
+      <Suspense fallback={null}>
+        <RouterProvider router={router} />
+      </Suspense>
     </Provider>
   </React.StrictMode>,
 );
