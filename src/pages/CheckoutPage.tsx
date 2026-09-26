@@ -36,7 +36,7 @@ export function CheckoutPage() {
         description="Customers choose where the books should be delivered and apply available gift points before payment."
       />
       <section className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-        <div className="space-y-6">
+        <div className="min-w-0 space-y-6">
           {/* Address selection */}
           <section className="rounded-[2rem] border border-brand/10 bg-white/95 p-6">
             <SectionHeader
@@ -56,8 +56,8 @@ export function CheckoutPage() {
                       : 'border-brand/10 bg-parchment/60'
                   }`}
                 >
-                  <div className="flex items-center justify-between gap-4">
-                    <div>
+                  <div className="flex flex-wrap items-start justify-between gap-4">
+                    <div className="min-w-0">
                       <p className="text-sm font-semibold uppercase tracking-[0.25em] text-accent">{address.label}</p>
                       <h3 className="mt-2 text-lg font-semibold text-ink">{address.recipient}</h3>
                       <p className="mt-2 text-sm text-brand/80">
@@ -103,7 +103,7 @@ export function CheckoutPage() {
         </div>
 
         {/* Summary aside */}
-        <aside className="rounded-[2rem] border border-brand/10 bg-white/95 p-6 sticky top-24 self-start">
+        <aside className="min-w-0 self-start rounded-[2rem] border border-brand/10 bg-white/95 p-6 xl:sticky xl:top-44">
           <SectionHeader eyebrow="Review" title="Ready for payment" description="Confirm delivery choices before moving to payment." />
           <dl className="mt-6 space-y-4 text-sm text-brand/80">
             <div className="flex items-center justify-between">

@@ -21,7 +21,7 @@ export function CartPage() {
         description="Customers can adjust quantities, remove books, review totals, and continue through the mocked purchase journey."
       />
       <section className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-        <div className="space-y-5">
+        <div className="min-w-0 space-y-5">
           {cartItems.length === 0 ? (
             <section className="rounded-[2rem] border border-dashed border-brand/20 bg-white/95 px-6 py-12 text-center">
               <p className="text-sm font-medium uppercase tracking-[0.3em] text-accent">Basket is empty</p>
@@ -33,11 +33,11 @@ export function CartPage() {
           ) : (
             cartItems.map((item) => (
               <article key={item.bookId} className="rounded-[2rem] border border-brand/10 bg-white/95 overflow-hidden">
-                <div className="flex flex-col gap-0 sm:flex-row sm:items-stretch">
+                <div className="flex flex-col gap-0 xl:flex-row xl:items-stretch">
                   {/* Book cover — fixed width column */}
-                  <div className="w-full sm:w-36 shrink-0">
+                  <div className="w-full shrink-0 xl:w-36">
                     <div
-                      className="relative h-40 w-full overflow-hidden sm:h-full"
+                      className="relative h-40 w-full overflow-hidden xl:h-full"
                       style={{ backgroundColor: item.book.coverColor }}
                     >
                       <div
@@ -55,7 +55,7 @@ export function CartPage() {
                   </div>
 
                   {/* Book info */}
-                  <div className="flex flex-1 flex-col justify-center gap-2 p-5">
+                  <div className="flex min-w-0 flex-1 flex-col justify-center gap-2 p-5">
                     <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">{item.book.category}</p>
                     <h3 className="font-serif text-xl font-semibold text-ink">{item.book.title}</h3>
                     <p className="text-sm text-brand/70">{item.book.author} · {item.book.brand}</p>
@@ -64,7 +64,7 @@ export function CartPage() {
                   </div>
 
                   {/* Price + controls */}
-                  <div className="flex shrink-0 flex-col justify-between gap-4 border-t border-brand/10 bg-parchment p-5 sm:w-48 sm:border-l sm:border-t-0">
+                  <div className="flex shrink-0 flex-col justify-between gap-4 border-t border-brand/10 bg-parchment p-5 xl:w-48 xl:border-l xl:border-t-0">
                     <div>
                       <p className="text-xs text-brand/70">Line total</p>
                       <p className="text-2xl font-semibold text-ink">{formatCurrency(item.lineTotal)}</p>
@@ -109,14 +109,14 @@ export function CartPage() {
               title="Items based on order history"
               description="Additional recommendations help grow basket size from the selected customer profile."
             />
-            <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3" style={{ gridAutoRows: '1fr' }}>
+            <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2" style={{ gridAutoRows: '1fr' }}>
               {recommendedBooks.map((book) => (
                 <BookCard key={book.id} book={book} showDescription={false} />
               ))}
             </div>
           </section>
         </div>
-        <aside className="rounded-[2rem] border border-brand/10 bg-white/95 p-6 sticky top-24 self-start">
+        <aside className="min-w-0 self-start rounded-[2rem] border border-brand/10 bg-white/95 p-6 xl:sticky xl:top-44">
           <SectionHeader
             eyebrow="Summary"
             title="Order totals"

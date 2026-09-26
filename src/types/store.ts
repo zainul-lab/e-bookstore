@@ -81,6 +81,9 @@ export interface CatalogueFilters {
   category: BookCategory | 'All';
   brand: string | 'All';
   search: string;
+  maxPrice: number | null;
+  minRating: number;
+  sortBy: 'default' | 'price-asc' | 'price-desc' | 'rating-desc';
 }
 
 export interface CheckoutState {

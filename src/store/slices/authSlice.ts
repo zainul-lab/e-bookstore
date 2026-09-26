@@ -1,5 +1,6 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { demoUsers } from '../../data/mockBookstore';
+import { getPersistedAuthenticatedUserId } from '../persistence';
 import type { RootState } from '../index';
 
 interface AuthState {
@@ -8,9 +9,10 @@ interface AuthState {
   error: string | null;
 }
 
+const persistedUserId = getPersistedAuthenticatedUserId();
 const initialState: AuthState = {
-  isAuthenticated: false,
-  userId: null,
+  isAuthenticated: persistedUserId !== null,
+  userId: persistedUserId,
   error: null,
 };
 

@@ -16,6 +16,7 @@ import { catalogueReducer } from './slices/catalogueSlice';
 import { checkoutReducer } from './slices/checkoutSlice';
 import { sessionReducer } from './slices/sessionSlice';
 import { usersReducer } from './slices/usersSlice';
+import { wishlistReducer } from './slices/wishlistSlice';
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -24,6 +25,7 @@ const rootReducer = combineReducers({
   cart: cartReducer,
   checkout: checkoutReducer,
   users: usersReducer,
+  wishlist: wishlistReducer,
 });
 
 export const store = configureStore({
@@ -50,18 +52,36 @@ export const selectCurrentUser = (state: RootState) =>
 export const selectFilteredBooks = (state: RootState) => {
   const currentFilters = state.catalogue;
 
-  return books.filter((book) => {
+  const filteredBooks = books.filter((book) => {
     const matchesCategory = currentFilters.category === 'All' || book.category === currentFilters.category;
     const matchesBrand = currentFilters.brand === 'All' || book.brand === currentFilters.brand;
     const matchesSearch =
       currentFilters.search.length === 0 ||
       `${book.title} ${book.author} ${book.brand}`.toLowerCase().includes(currentFilters.search.toLowerCase());
 
-    return matchesCategory && matchesBrand && matchesSearch;
+    const matchesPrice = currentFilters.maxPrice === null || book.price <= currentFilters.maxPrice;
+    const matchesRating = book.rating >= currentFilters.minRating;
+
+    return matchesCategory && matchesBrand && matchesSearch && matchesPrice && matchesRating;
   });
+
+  switch (currentFilters.sortBy) {
+    case 'price-asc':
+      return filteredBooks.sort((a, b) => a.price - b.price);
+    case 'price-desc':
+      return filteredBooks.sort((a, b) => b.price - a.price);
+    case 'rating-desc':
+      return filteredBooks.sort((a, b) => b.rating - a.rating);
+    default:
+      return filteredBooks;
+  }
 };
 
 export const selectBook = (bookId: string) => getBookById(bookId);
+export const selectWishlistBooks = (state: RootState) =>
+  (state.wishlist[state.session.selectedUserId] ?? [])
+    .map(getBookById)
+    .filter((book): book is (typeof books)[number] => book !== undefined);
 
 export const selectRelatedBooks = (bookId: string) => getRelatedBooks(bookId);
 
