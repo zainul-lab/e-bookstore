@@ -4,6 +4,7 @@ import { addToCart } from '../store/slices/cartSlice';
 import { formatCurrency } from '../utils/formatCurrency';
 import { useToast } from './Toast';
 import { BookCover } from './BookCover';
+import { WishlistButton } from './WishlistButton';
 import type { Book } from '../types/store';
 
 export function BookCard({ book, showDescription = true }: { book: Book; showDescription?: boolean }) {
@@ -11,7 +12,7 @@ export function BookCard({ book, showDescription = true }: { book: Book; showDes
   const showToast = useToast();
 
   return (
-    <article className="flex h-full flex-col rounded-[1.75rem] border border-brand/10 bg-white/95 overflow-hidden transition hover:-translate-y-1 hover:border-accent/40 hover:shadow-md">
+    <article className="relative flex h-full flex-col rounded-[1.75rem] border border-brand/10 bg-white/95 overflow-hidden transition hover:-translate-y-1 hover:border-accent/40 hover:shadow-md">
       {/* Cover — full width, fixed height */}
       <BookCover book={book} />
 
@@ -39,7 +40,7 @@ export function BookCard({ book, showDescription = true }: { book: Book; showDes
           ))}
         </div>
 
-        <div className="flex items-center justify-between gap-2 pt-1 border-t border-brand/10">
+        <div className="flex flex-wrap items-center justify-between gap-3 pt-1 border-t border-brand/10">
           <div>
             <p className="text-lg font-semibold text-ink leading-none">{formatCurrency(book.price)}</p>
             <p className="mt-0.5 text-[10px] text-pine">
@@ -47,9 +48,11 @@ export function BookCard({ book, showDescription = true }: { book: Book; showDes
             </p>
           </div>
           <div className="flex flex-col gap-1.5 items-end shrink-0">
+            <WishlistButton book={book} className="relative z-10 rounded-full border border-brand/20 px-3 py-1.5 text-[11px] font-semibold text-brand whitespace-nowrap" />
             <Link
               to={`/catalogue/${book.id}`}
-              className="rounded-full border border-brand/20 px-3 py-1.5 text-[11px] font-semibold text-brand whitespace-nowrap"
+              className="rounded-full border border-brand/20 px-3 py-1.5 text-[11px] font-semibold text-brand whitespace-nowrap after:absolute after:inset-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              aria-label={`View details for ${book.title}`}
             >
               View details
             </Link>
@@ -59,7 +62,7 @@ export function BookCard({ book, showDescription = true }: { book: Book; showDes
                 dispatch(addToCart(book.id));
                 showToast(`"${book.title}" added to basket`);
               }}
-              className="rounded-full bg-brand px-3 py-1.5 text-[11px] font-semibold text-white whitespace-nowrap"
+              className="relative z-10 rounded-full bg-brand px-3 py-1.5 text-[11px] font-semibold text-white whitespace-nowrap"
             >
               Add to basket
             </button>

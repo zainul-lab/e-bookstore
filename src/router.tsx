@@ -13,6 +13,7 @@ const HomePage          = lazy(() => import('./pages/HomePage').then((m) => ({ d
 const CataloguePage     = lazy(() => import('./pages/CataloguePage').then((m) => ({ default: m.CataloguePage })));
 const ProductDetailPage = lazy(() => import('./pages/ProductDetailPage').then((m) => ({ default: m.ProductDetailPage })));
 const CartPage          = lazy(() => import('./pages/CartPage').then((m) => ({ default: m.CartPage })));
+const WishlistPage      = lazy(() => import('./pages/WishlistPage').then((m) => ({ default: m.WishlistPage })));
 const CheckoutPage      = lazy(() => import('./pages/CheckoutPage').then((m) => ({ default: m.CheckoutPage })));
 const PaymentPage       = lazy(() => import('./pages/PaymentPage').then((m) => ({ default: m.PaymentPage })));
 const ConfirmationPage  = lazy(() => import('./pages/ConfirmationPage').then((m) => ({ default: m.ConfirmationPage })));
@@ -38,6 +39,7 @@ export const router = createBrowserRouter([
           { path: 'catalogue', element: <CataloguePage /> },
           { path: 'catalogue/:bookId', element: <ProductDetailPage /> },
           { path: 'cart', element: <CartPage /> },
+          { path: 'wishlist', element: <WishlistPage /> },
           { path: 'checkout', element: <CheckoutPage /> },
           { path: 'payment', element: <PaymentPage /> },
           { path: 'confirmation', element: <ConfirmationPage /> },

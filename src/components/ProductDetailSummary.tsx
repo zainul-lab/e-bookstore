@@ -7,6 +7,7 @@ import { useToast } from './Toast';
 import { BookCover } from './BookCover';
 import { BookCard } from './BookCard';
 import { SectionHeader } from './SectionHeader';
+import { WishlistButton } from './WishlistButton';
 import type { Book } from '../types/store';
 
 export function ProductDetailSummary({ book }: { book: Book }) {
@@ -17,7 +18,7 @@ export function ProductDetailSummary({ book }: { book: Book }) {
   return (
     <div className="space-y-8">
       <section className="grid gap-6 rounded-[2rem] border border-brand/10 bg-white/95 p-6 lg:grid-cols-[1.1fr_0.9fr]">
-        <div className="space-y-5">
+        <div className="min-w-0 space-y-5">
           <div className="flex flex-wrap items-center gap-3">
             <span className="rounded-full border border-brand/10 bg-parchment px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-brand">
               {book.category}
@@ -27,7 +28,7 @@ export function ProductDetailSummary({ book }: { book: Book }) {
             </span>
           </div>
           <div>
-            <h2 className="font-serif text-4xl font-semibold leading-tight text-ink">{book.title}</h2>
+            <h2 className="font-serif text-3xl font-semibold leading-tight text-ink sm:text-4xl">{book.title}</h2>
             <p className="mt-2 text-sm text-brand/70">{book.author} · {book.brand} · Rated {book.rating}/5</p>
           </div>
           <p className="text-base leading-8 text-brand/80">{book.description}</p>
@@ -52,9 +53,10 @@ export function ProductDetailSummary({ book }: { book: Book }) {
             <Link to="/cart" className="rounded-full border border-brand/15 px-5 py-3 text-sm font-semibold text-brand">
               Review basket
             </Link>
+            <WishlistButton book={book} className="rounded-full border border-brand/15 px-5 py-3 text-sm font-semibold text-brand" />
           </div>
         </div>
-        <div className="rounded-[1.75rem] border border-brand/10 bg-parchment p-6">
+        <div className="min-w-0 rounded-[1.75rem] border border-brand/10 bg-parchment p-6">
           <BookCover book={book} large />
           <p className="mt-6 text-sm font-semibold uppercase tracking-[0.25em] text-accent">Purchase snapshot</p>
           <p className="mt-4 font-serif text-4xl font-semibold tracking-tight text-ink">{formatCurrency(book.price)}</p>

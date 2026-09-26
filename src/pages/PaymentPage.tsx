@@ -38,7 +38,7 @@ export function PaymentPage() {
         description="This MVP simulates payment selection and completion without a live payment gateway."
       />
       <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-        <div className="space-y-6 rounded-[2rem] border border-brand/10 bg-white/95 p-6">
+        <div className="min-w-0 space-y-6 rounded-[2rem] border border-brand/10 bg-white/95 p-6">
           <SectionHeader
             eyebrow="Payment screen"
             title="Select a payment method"
@@ -77,7 +77,7 @@ export function PaymentPage() {
             Complete payment
           </button>
         </div>
-        <aside className="rounded-[2rem] border border-brand/10 bg-white/95 p-6 sticky top-24 self-start">
+        <aside className="min-w-0 self-start rounded-[2rem] border border-brand/10 bg-white/95 p-6 xl:sticky xl:top-44">
           <SectionHeader eyebrow="Payment summary" title="Order amount" description="Mocked payment confirmation uses the basket total after discounts." />
           <dl className="mt-6 space-y-4 text-sm text-brand/80">
             <div className="flex items-center justify-between">

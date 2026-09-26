@@ -1,12 +1,59 @@
-import { demoUsers, paymentOptions } from '../data/mockBookstore';
+import { books, demoUsers, paymentOptions } from '../data/mockBookstore';
 import type { CartItem, CheckoutState } from '../types/store';
 import type { RootState } from './index';
 
 const selectedUserStorageKey = 'ebookstore:selectedUserId';
+const authenticatedUserStorageKey = 'ebookstore:authenticatedUserId';
 const cartStorageKey = 'ebookstore:cartItems';
 const checkoutStorageKey = 'ebookstore:checkoutState';
+const wishlistStorageKey = 'ebookstore:wishlist';
+
+export function getPersistedWishlist(): Record<string, string[]> {
+  if (typeof window === 'undefined') {
+    return {};
+  }
+
+  const value = window.localStorage.getItem(wishlistStorageKey);
+  if (!value) {
+    return {};
+  }
+
+  try {
+    const parsed: unknown = JSON.parse(value);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      return {};
+    }
+
+    const saved = parsed as Record<string, unknown>;
+    const bookIds = new Set(books.map((book) => book.id));
+    return Object.fromEntries(
+      demoUsers.map((user) => [
+        user.id,
+        Array.isArray(saved[user.id])
+          ? [...new Set((saved[user.id] as unknown[]).filter((id): id is string => typeof id === 'string' && bookIds.has(id)))]
+          : [],
+      ]),
+    );
+  } catch {
+    return {};
+  }
+}
+
+export function getPersistedAuthenticatedUserId() {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  const value = window.localStorage.getItem(authenticatedUserStorageKey);
+  return demoUsers.find((user) => user.id === value)?.id ?? null;
+}
 
 export function getPersistedSelectedUserId() {
+  const authenticatedUserId = getPersistedAuthenticatedUserId();
+  if (authenticatedUserId) {
+    return authenticatedUserId;
+  }
+
   if (typeof window === 'undefined') {
     return demoUsers[0].id;
   }
@@ -44,7 +91,7 @@ function sanitizeCartItems(items: unknown) {
   return filtered;
 }
 
-export function getPersistedCartItems(userId = demoUsers[0].id) {
+export function getPersistedCartItems(userId = getPersistedSelectedUserId()) {
   const defaultItems = getDefaultCartItems();
 
   if (typeof window === 'undefined') {
@@ -142,7 +189,13 @@ export function persistStoreState(state: RootState) {
 
   persistedCarts[state.session.selectedUserId] = state.cart.items;
 
+  if (state.auth.isAuthenticated && state.auth.userId) {
+    window.localStorage.setItem(authenticatedUserStorageKey, state.auth.userId);
+  } else {
+    window.localStorage.removeItem(authenticatedUserStorageKey);
+  }
   window.localStorage.setItem(selectedUserStorageKey, state.session.selectedUserId);
+  window.localStorage.setItem(wishlistStorageKey, JSON.stringify(state.wishlist));
   window.localStorage.setItem(cartStorageKey, JSON.stringify(persistedCarts));
   window.localStorage.setItem(
     checkoutStorageKey,
