@@ -1,25 +1,70 @@
-import axios from 'axios';
 import type { Book, BookCategory, CartItem, Order, User } from '../types/store';
 import { books, demoUsers } from '../data/mockBookstore';
+import { bookService } from './bookService';
+import { retryWithBackoff } from '../utils/retry';
 
-const mockApi = axios.create({
-  adapter: async (config) => ({
-    data: config.url === '/users' ? demoUsers : books,
-    status: 200,
-    statusText: 'OK',
-    headers: {},
-    config,
-  }),
-});
+/**
+ * Hybrid service that attempts API calls first, then falls back to mock data
+ * This allows gradual migration from mock to real API
+ */
 
+export async function fetchBooksHybrid(filters?: {
+  category?: BookCategory | 'All';
+  brand?: string;
+  search?: string;
+}): Promise<Book[]> {
+  try {
+    // Try API first
+    const data = await retryWithBackoff(() => bookService.getBooks(filters));
+    return data;
+  } catch (error) {
+    console.warn('API call failed, falling back to mock data:', error);
+    // Fallback to mock data
+    let result = books;
+
+    if (filters?.category && filters.category !== 'All') {
+      result = result.filter((book) => book.category === filters.category);
+    }
+
+    if (filters?.brand && filters.brand !== 'All') {
+      result = result.filter((book) => book.brand === filters.brand);
+    }
+
+    if (filters?.search) {
+      const query = filters.search.toLowerCase();
+      result = result.filter(
+        (book) =>
+          book.title.toLowerCase().includes(query) ||
+          book.author.toLowerCase().includes(query) ||
+          book.description.toLowerCase().includes(query)
+      );
+    }
+
+    return result;
+  }
+}
+
+export async function fetchUsersHybrid(): Promise<User[]> {
+  try {
+    // Try API first
+    const data = await retryWithBackoff(() =>
+      fetch('/api/users').then((res) => res.json())
+    );
+    return data;
+  } catch (error) {
+    console.warn('API call failed, falling back to mock data:', error);
+    // Fallback to mock data
+    return demoUsers;
+  }
+}
+
+// Export for backwards compatibility
 export async function fetchBooks() {
-  const response = await mockApi.get<Book[]>('/books');
-  return response.data;
+  return fetchBooksHybrid();
 }
 
 export async function fetchUsers() {
-  const response = await mockApi.get<User[]>('/users');
-  return response.data;
+  return fetchUsersHybrid();
 }
 
 export function getBookById(bookId: string) {
